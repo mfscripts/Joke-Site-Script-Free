@@ -1,0 +1,13 @@
+<?php
+
+include_once("config.inc.php");
+include_once("db_connect.php");
+
+$get_random = mysql_query("SELECT id, joke FROM jokes ORDER BY RAND() LIMIT 1");
+$random_url = trim(substr(urlconvert(mysql_result($get_random, 0, joke)), 0, 50));
+$random_id  = mysql_result($get_random, 0, id);
+$url = "viewr-".$random_id."-".$random_url.".html";
+header("Location: ".$url); 
+exit;
+die();
+?>

@@ -1,0 +1,101 @@
+<?php
+
+include_once("config.inc.php");
+include_once("db_connect.php");
+
+// get vars
+$c    = $_REQUEST['c'];
+
+if(strlen($c) > 1) {
+
+	$start  = $_REQUEST['start'];
+	if(!$start) $start = 0;
+	$page = $start + 50; $page =  $page/50;
+
+	$ptitle    = $c." search - Page $page";
+	$meta_keys = "jokes, funny, laugher, joke, gag, laughing";
+	$meta_desc = $c." search - Page $page";
+	$selected  = "SEARCH";
+
+	include("header.php");
+
+	$temp3 = mysql_query("SELECT * FROM jokes WHERE category LIKE '%$c%' OR joke LIKE '%$c%'");
+	$temp = mysql_query("SELECT * FROM jokes WHERE category LIKE '%$c%' OR joke LIKE '%$c%' ORDER BY joke LIMIT $start, $perpage");
+	$total = mysql_numrows($temp3);
+
+?>
+
+	<table width="100%" cellspacing="5" cellpadding="0">
+	  <tr>
+	    <td valign="top">
+		<?php
+		  echo "<b>".$total." results for '".$c."':</b><br><br>";
+		  echo "Your search results are displayed below:<br><br>";
+		?>
+		</td>
+	  </tr>
+	</table>
+
+		<?php
+		if($total > 0) {
+		  echo "<table width='100%' cellspacing='0' cellpadding='0'>";
+		  $tracker = $start+1;
+		  while($row = mysql_fetch_array($temp)) {
+		    echo "<tr><td width='40' align='right'><b>".$tracker.".</b>&nbsp;&nbsp;&nbsp;</td><td class='listingtitle'><b>Category:</b>&nbsp;".$row[category]."&nbsp;&nbsp;<img src='images/small-stars-".$row[votestartotal].".gif' width='52' height='8' alt='".$row[votestartotal]." stars'></td></tr>";
+		    echo "<tr><td></td><td>".trim(substr(stripslashes($row[joke]), 0, 120))."... <a href='view-".$row[id]."-".trim(substr(urlconvert($row[joke]), 0, 50)).".html' class='morelink'>more</a><br><br></td></tr>";
+			$tracker++;
+		  }
+		  echo "</table>";
+		}
+		else echo "<br>&nbsp;<b>- There are no results for your search criteria, <a href='search.html'>please try again</a>.</b>";
+		?>
+		
+		<br><div align="center">
+			<?php
+			$start = $start + $perpage;
+			if($start > $perpage) {
+				$start2 = $start - ($perpage * 2);
+				if($start2 < 0) $start2 = 0;
+				echo "<a href=\"search.html?c=".$c."&start=".$start2."\">< <b>Previous Page</b></a> &nbsp;";
+			}
+			if($start < $total) echo "&nbsp; <a href=\"search.html?c=".$c."&start=".$start."\"><b>Next Page</b> ></a>";
+			?></div><br><br>
+		
+<?php
+}
+else {
+
+	$ptitle    = "Search Jokes";
+	$meta_keys = "search, jokes, funny, laugher, joke, gag, laughing";
+	$meta_desc = "Search Jokes";
+	$selected  = "SEARCH";
+
+	include("header.php");
+
+?>
+
+	<table width="100%" cellspacing="5" cellpadding="0">
+	  <tr>
+	    <td valign="top">
+		<?php
+		  echo "<b>Search For Jokes:</b><br><br>";
+		  echo "Use the searh box below to search for jokes on this site.<br><br>";
+		?>
+		</td>
+	  </tr>
+	</table>
+	
+	<?php
+	  echo "<table width='95%' cellspacing='3' cellpadding='0' align='center'><form method='POST' action='search.html'>";
+	  echo "<tr><td width='80' align='right'><b>Criteria:</b>&nbsp;&nbsp;<td><input name='c' value='".$c."' type='text'></td></tr>";
+	  echo "<tr><td width='80' align='right'><td><input name='submitme' value='search' type='submit'></td></tr>";
+	  echo "</form></table><br>";
+	?>
+	
+<?php
+}
+?>
+
+<?php
+include("footer.php");
+?>

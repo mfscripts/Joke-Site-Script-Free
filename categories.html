@@ -1,0 +1,114 @@
+<?php
+
+include_once("config.inc.php");
+include_once("db_connect.php");
+
+// get vars
+$cat    = $_REQUEST['cat'];
+
+if($cat) {
+
+	$cat    = str_replace("-", " ", $cat);
+	$start  = $_REQUEST['start'];
+	if(!$start) $start = 0;
+	$page = $start + 50; $page =  $page/50;
+
+	$ptitle    = UCWords($cat)." Category - Page $page";
+	$meta_keys = "jokes, funny, laugher, joke, gag, laughing";
+	$meta_desc = UCWords($cat)." Category - Page $page";
+	$selected  = "CATEGORIES";
+
+	include("header.php");
+
+	$temp3 = mysql_query("SELECT * FROM jokes WHERE category = '$cat'");
+	$temp = mysql_query("SELECT * FROM jokes WHERE category = '$cat' ORDER BY joke LIMIT $start, $perpage");
+	$total = mysql_numrows($temp3);
+
+?>
+
+	<table width="100%" cellspacing="5" cellpadding="0">
+	  <tr>
+	    <td valign="top">
+		<?php
+		  echo "<b>".UCWords($cat)." Category:</b><br><br>";
+		  echo "All our jokes listing within the ".$cat." category are listed below. Click on any of the items to view the full joke.<br><br>";
+		?>
+		</td>
+	  </tr>
+	</table>
+
+		<?php
+		if($total > 0) {
+		  echo "<table width='100%' cellspacing='0' cellpadding='0'>";
+		  $tracker = $start+1;
+		  while($row = mysql_fetch_array($temp)) {
+		    echo "<tr><td width='40' align='right'><b>".$tracker.".</b>&nbsp;&nbsp;&nbsp;</td><td class='listingtitle'><b>Category:</b>&nbsp;".$row[category]."&nbsp;&nbsp;<img src='images/small-stars-".$row[votestartotal].".gif' width='52' height='8' alt='".$row[votestartotal]." stars'></td></tr>";
+		    echo "<tr><td></td><td>".trim(substr(stripslashes($row[joke]), 0, 120))."... <a href='view-".$row[id]."-".trim(substr(urlconvert($row[joke]), 0, 50)).".html' class='morelink'>more</a><br><br></td></tr>";
+			$tracker++;
+		  }
+		  echo "</table>";
+		}
+		?>
+		
+		<br><div align="center">
+			<?php
+			$start = $start + $perpage;
+			if($start > $perpage) {
+				$start2 = $start - ($perpage * 2);
+				if($start2 < 0) $start2 = 0;
+				echo "<a href=\"jokes_".str_replace(" ", "-", $cat)."_"."page-".$start2.".html\">< <b>Previous Page</b></a> &nbsp;";
+			}
+			if($start < $total) echo "&nbsp; <a href=\"jokes_".str_replace(" ", "-", $cat)."_"."page-".$start.".html\"><b>Next Page</b> ></a>";
+			?></div><br><br>
+		
+<?php
+}
+else {
+
+	$ptitle    = "Category Listing";
+	$meta_keys = "jokes, funny, laugher, joke, gag, laughing";
+	$meta_desc = "Category Listing";
+	$selected  = "CATEGORIES";
+
+	include("header.php");
+	
+	$cats = mysql_query("SELECT * FROM categories ORDER BY category");
+
+?>
+
+	<table width="100%" cellspacing="5" cellpadding="0">
+	  <tr>
+	    <td valign="top">
+		<?php
+		  echo "<b>Choose Category:</b><br><br>";
+		  echo "Choose from the category listing below to being browsing our jokes by category.<br><br>";
+		?>
+		</td>
+	  </tr>
+	</table>
+	
+	<?php
+	  echo "<table width='95%' cellspacing='3' cellpadding='0' align='center'>";
+	  $tracker = 0;
+	  while($row = mysql_fetch_array($cats)) {
+	    // get total
+		$total = mysql_query("SELECT COUNT(id) AS total FROM jokes WHERE category = '".$row[category]."'");
+		$jokes_total = mysql_result($total, 0, total);
+	    if($tracker == 0) echo "<tr>";
+		echo "<td width='50%'> - <a href='jokes_".str_replace(" ", "-", $row[category]).".html'>".$row[category]."</a> <font style='color:#999999;'>(".$jokes_total.")</font></td>";
+		if($tracker == 1) {
+		  echo "</tr>";
+		  $tracker = 0;
+		}
+		else $tracker++;
+	  }
+	  echo "</table><br>";
+	?>
+	
+<?php
+}
+?>
+
+<?php
+include("footer.php");
+?>

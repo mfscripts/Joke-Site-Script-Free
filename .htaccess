@@ -1,0 +1,7 @@
+AddType application/x-httpd-php .html
+RewriteEngine on
+RewriteRule ^browse-(.*)_page-(.*).html$ browse.html?let=$1&start=$2 [QSA]
+RewriteRule ^jokes_(.*)_page-(.*).html$ categories.html?cat=$1&start=$2 [QSA]
+RewriteRule ^jokes_(.*).html$ categories.html?cat=$1 [QSA]
+RewriteRule ^view-(.*)-(.*).html$ viewitem.html?j=$1 [QSA]
+RewriteRule ^viewr-(.*)-(.*).html$ viewitem.html?j=$1&r=1 [QSA]

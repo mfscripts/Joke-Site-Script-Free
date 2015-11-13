@@ -1,0 +1,90 @@
+<?php
+
+include_once("config.inc.php");
+include_once("db_connect.php");
+
+// get vars
+$submitme  = $_REQUEST['submitme'];
+
+$ptitle    = "Submit A Joke";
+$meta_keys = "submit, joke, search, jokes, funny, laugher, joke, gag, laughing";
+$meta_desc = "Submit A Joke";
+$selected  = "SUBMIT";
+
+include("header.php");
+
+$showform = TRUE;
+
+if($submitme) {
+	
+	// get vars
+	$youremail = $_REQUEST['youremail'];
+	$category  = $_REQUEST['category'];
+	$joke      = $_REQUEST['joke'];
+
+	$errorstring = "";
+	$youremail = strtolower(formatField($youremail));
+	if(strlen($youremail) == 0) $errorstring .="You must specify your email.<br>";
+	if(strlen($category) == 0) $errorstring .="You must choose a category.<br>";
+	if(strlen($joke) == 0) $errorstring .="You have not entered a joke.<br>";
+	if(strlen($youremail) < 9 || strlen($youremail) > 64) $errorstring .= "Please enter a valid email address.<br>";
+	else
+	{
+		$emailtail = strstr($youremail, '@');
+		if(!strstr($youremail, '@') || !strstr($emailtail, '.')) $errorstring .= "Please enter a valid email address.<br>";
+	}
+	if(strlen($errorstring) == 0){
+		// add to pending
+		$ip = GetHostByName($REMOTE_ADDR); 
+		$insert = mysql_query("INSERT INTO pendingjokes (category, joke, email, ip, dateadded) VALUES ('".formatField($category)."', '".formatField($joke)."', '".formatField($youremail)."', '".$ip."', NOW())");
+		if($insert) $showform = FALSE;
+	}
+
+}
+
+
+?>
+
+	<table width="100%" cellspacing="5" cellpadding="0">
+	  <tr>
+	    <td valign="top">
+		  <b>Submit A Joke</b><br><br>
+		  
+		  <?php
+		  if($showform == TRUE) {
+		  ?>
+		    Use the following form to submit a new joke to <?php echo $site_name; ?>. Please use the search feature first to make sure the joke does not exist alreay.<br><br>
+		   <table width="100%" cellpadding="0" cellspacing="0" border="0" align="center">
+			  <tr><form method="post" action="submit-joke.html"><input type="hidden" name="submitme" value="yes"><td style="padding:0px;" align="center"><br>
+				<?php if(strlen($errorstring) > 0) echo "<table cellpadding=\"8\" cellspacing=\"0\" border=\"0\" align=\"center\" bgcolor=\"#cccccc\"><tr><td><font class=\"error\"><b>Error(s) Found:</b><br><br>$errorstring</td></tr></table><br><br>";?>
+				<table cellpadding="5" cellspacing="0" border="0" align="left">
+				<tr><td><b>Your Email:</b></td><td><input type="text" name="youremail" class="form" style="width:250px;" value="<?php echo stripslashes($youremail); ?>"></td></tr>
+				  <tr><td><b>Joke Category:</b></td><td><select name="category" class="form" style="width:250px;">
+				  <?php
+				    echo "<option value=''>< choose ></option>";
+				    $cats = mysql_query("SELECT * FROM categories ORDER BY category");
+					while($row = mysql_fetch_array($cats)) {
+					  echo "<option value='".$row[category]."'";
+					  if($row[category] == $category) echo " SELECTED";
+					  echo ">".$row[category]."</option>";
+					}
+				  ?>
+				  </select></td></tr>
+				  <tr><td valign="top"><b>Joke:</b></td><td><textarea name="joke" class="form" style="width:250px;" rows="10"><?php echo stripslashes($joke); ?></textarea></td></tr>
+				  <tr><td></td><td><input type="submit" value="add joke" class="form">&nbsp;&nbsp;<input type="reset" value="reset" class="form"></td></tr>
+				</table><br>
+			  </td></form></tr>
+			</table>
+		  <?php
+		  }
+		  else echo "Thank You!<br><br>Your joke has been sent for approval and should appear on the site in 24 hours. Thanks again for your contribution to ".$site_name.".<br><br><br><a href='submit-joke.html'>submit another joke</a><br><a href='index.html'>home</a>";
+		  ?>
+		  
+		</td>
+	  </tr>
+	</table>
+	
+
+<?php
+include("footer.php");
+?>

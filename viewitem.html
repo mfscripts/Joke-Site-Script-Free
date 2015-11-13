@@ -1,0 +1,129 @@
+<?php
+
+include_once("config.inc.php");
+include_once("db_connect.php");
+
+// get vars
+$j    = $_REQUEST['j'];
+$r    = $_REQUEST['r'];
+
+if(!$j) {
+
+	$ptitle    = UCWords($cat)." Category - Page $page";
+	$meta_keys = "search, jokes, funny, laugher, joke, gag, laughing";
+	$meta_desc = UCWords($cat)." Category - Page $page";
+	$selected  = "VIEW";
+
+	include("header.php");
+	
+	echo "<b>ERROR!</b><br><br>No joke was requested, please go back to the homepage and start again.<br>";
+
+}
+else {
+
+	$vote = $_REQUEST['vote'];
+	if($vote) {
+	  $lookup_field = "votestar".$vote;
+	  $get_values   = mysql_query("SELECT votestar1, votestar2, votestar3, votestar4, votestar5 FROM jokes WHERE id = ".$j." LIMIT 1");
+	  $votestar1 = mysql_result($get_values, 0, votestar1);
+	  $votestar2 = mysql_result($get_values, 0, votestar2);
+	  $votestar3 = mysql_result($get_values, 0, votestar3);
+	  $votestar4 = mysql_result($get_values, 0, votestar4);
+	  $votestar5 = mysql_result($get_values, 0, votestar5);
+	  if($vote == 1) $votestar1 = $votestar1+1;
+	  elseif($vote == 2) $votestar2 = $votestar2+1;
+	  elseif($vote == 3) $votestar3 = $votestar3+1;
+	  elseif($vote == 4) $votestar4 = $votestar4+1;
+	  elseif($vote == 5) $votestar5 = $votestar5+1;
+	  $total = ($votestar1 * 1)+($votestar2 * 2)+($votestar3 * 3)+($votestar4 * 4)+($votestar5 * 5);
+	  $total = $total/($votestar1+$votestar2+$votestar3+$votestar4+$votestar5);
+	  $update_joke = mysql_query("UPDATE jokes SET ".$lookup_field." = ".$$lookup_field.", votestartotal = ".$total." WHERE id = ".$j." LIMIT 1");
+	}
+
+	$jokeqry = mysql_query("SELECT * FROM jokes WHERE id = ".$j." LIMIT 1");
+	if($jokeqry) {
+	  $category      = mysql_result($jokeqry, 0, category);
+	  $joke          = stripslashes(mysql_result($jokeqry, 0, joke));
+	  $dateadded     = mysql_result($jokeqry, 0, dateadded);
+	  $dateadded     = substr($dateadded, 8, 2)."/".substr($dateadded, 5, 2)."/".substr($dateadded, 0, 4);
+	  $votestartotal = mysql_result($jokeqry, 0, votestartotal);
+	  $views         = mysql_result($jokeqry, 0, views);
+	  
+	  $newviews = $views+1;
+	  $update = mysql_query("UPDATE jokes SET views = ".$newviews." WHERE id = ".$j." LIMIT 1");
+	}
+	else die("ERROR LOOKING UP JOKE");
+
+	$ptitle    = substr($joke, 0, 50)."... joke";
+	$meta_keys = str_replace(" ", ", ", substr($joke, 0, 50)).", search, jokes, funny, laugher, joke, gag, laughing";
+	$meta_desc = substr($joke, 0, 50)."... joke";
+	if($r == 1) $selected = "RANDOM";
+	else $selected  = "VIEW";
+
+	include("header.php");
+
+?>
+
+	<table width="100%" cellspacing="5" cellpadding="0">
+	  <tr>
+	    <td valign="top">
+		<?php
+		  echo "<table width='100%' cellspacing='0' cellpadding='0'>";
+		  echo "<tr><td colspan='2'><b>";
+		  if($r == 1) echo "Random";
+		  else echo "Viewing";
+		  echo " Joke:</b><br><br></td></tr>";
+		  echo "<tr><td width='90'><font class='listingtitle'>Category:</font></td><td>".$category."</td></tr>";
+		  echo "<tr><td style='padding-top:4px;'><font class='listingtitle'>Date Added:</font></td><td style='padding-top:4px;'>".$dateadded."</td></tr>";
+		  if(number_format($votestartotal, 0) == 0) $rating = "not yet rated";
+		  else $rating = number_format($votestartotal, 0)." stars";
+		  echo "<form method='POST' action='view-".$j."-".trim(substr(urlconvert($joke), 0, 50)).".html'><tr><td style='padding-top:4px;'><font class='listingtitle'>Rating:</font></td><td style='padding-top:4px;'><img src='images/small-stars-".number_format($votestartotal, 0).".gif' width='52' height='8' alt='".$rating."'>";
+		  if(!$vote) echo "&nbsp;&nbsp;&nbsp;<select name='vote' class='smallform'>
+		    <option value=''>< rate ></option>
+			<option value='1'>1 out of 5</option>
+			<option value='2'>2 out of 5</option>
+			<option value='3'>3 out of 5</option>
+			<option value='4'>4 out of 5</option>
+			<option value='5'>5 out of 5</option>
+		  </select>&nbsp;&nbsp;<input name='submit' type='submit' value='rate now' class='smallform'>";
+		  echo "</td></tr></form>";
+		  echo "<tr><td style='padding-top:4px;'><font class='listingtitle'>Views:</font></td><td style='padding-top:4px;'>".$newviews."</td></tr>";
+		  echo "<tr><td style='padding-top:4px;'></td><td>&nbsp;</td></tr>";
+		  echo "<tr><td valign='top' style='padding-top:4px;'><font class='listingtitle'>Joke:</font></td><td valign='top' class='jokeview' style='padding-top:4px;'>".$joke."</td></tr>";
+		  echo "<tr><td style='padding-top:4px;'></td><td>&nbsp;</td></tr>";
+		  $this_url   = $site_path."view-".$j."-".trim(substr(urlconvert($joke), 0, 50)).".html";
+		  $this_title = trim(substr($joke, 0, 50));
+		  echo "<tr><td style='padding-top:8px;'></td><td style='padding-top:8px;'>
+		  <img src='images/delicious.png' width='16' height='16' border='0'>&nbsp;<a href='http://del.icio.us/post?url=".urlencode($this_url)."&title=".urlencode($this_title)."' target='_blank'>Add to del.icio.us</a>&nbsp;&nbsp;
+		  <img src='images/digg.png' width='16' height='16' border='0'>&nbsp;<a href='http://digg.com/submit?phase=2&url=".urlencode($this_url)."&title=".urlencode($this_title)."' target='_blank'>Digg this</a>&nbsp;&nbsp;
+		  <img src='images/reddit.png' width='16' height='16' border='0'>&nbsp;<a href='http://reddit.com/submit?url=".urlencode($this_url)."&title=".urlencode($this_title)."' target='_blank'>Reddit</a>
+		  </td></tr>";
+		  
+		  echo "</table>";
+		  
+		?>
+		</td>
+	  </tr>
+	  <tr><td colspan='2'><br><br><b>More <?php echo UCWords($category); ?>:</b><br><br></td></tr>
+	</table>
+	
+	<?php
+	  
+	  $temp = mysql_query("SELECT * FROM jokes WHERE category = '$category' ORDER BY RAND() LIMIT 10");
+	  echo "<table width='95%' cellspacing='3' cellpadding='0' align='center'>";
+	  $tracker = 1;
+	  while($row = mysql_fetch_array($temp)) {
+	    echo "<tr><td width='40' align='right'><b>".$tracker.".</b>&nbsp;&nbsp;&nbsp;</td><td class='listingtitle'><b>Category:</b>&nbsp;".$row[category]."&nbsp;&nbsp;<img src='images/small-stars-".$row[votestartotal].".gif' width='52' height='8' alt='".$row[votestartotal]." stars'></td></tr>";
+	    echo "<tr><td></td><td>".trim(substr(stripslashes($row[joke]), 0, 120))."... <a href='view-".$row[id]."-".trim(substr(urlconvert($row[joke]), 0, 50)).".html' class='morelink'>more</a><br><br></td></tr>";
+		$tracker++;
+	  }
+	  echo "</table><br>";
+	?>
+	
+<?php
+}
+?>
+
+<?php
+include("footer.php");
+?>

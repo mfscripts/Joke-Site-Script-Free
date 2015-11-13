@@ -1,0 +1,111 @@
+body {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #453159;
+}
+td,th {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	color: #453159;
+}
+input, textarea, select {
+	border-style:solid;
+	border-width:1px;
+	border-color:#666666;
+	font-size:13px;
+	color:#000000;
+}
+a {
+	font-size: 11px;
+	text-decoration: underline;
+	color: #444444;
+}
+a:hover {
+	font-size: 11px;
+	text-decoration: none;
+	color: #A392B4;
+}
+.slogan {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	color: #FFFFFF;
+}
+.mainnav {
+	font-size: 13px;
+	text-decoration: none;
+	color: #2A2A2A;
+}
+.mainnav:hover {
+	font-size: 13px;
+	text-decoration: underline;
+	color: #2A2A2A;
+}
+.mainnavbreak {
+	color: #9A7A1B;
+}
+.footer {
+	font-size: 9px;
+	text-decoration: none;
+	color: #CCCCCC;
+}
+.footer a:hover {
+	font-size: 9px;
+	text-decoration: underline;
+	color: #CCCCCC;
+}
+.footernav a {
+	font-size: 10px;
+	text-decoration: none;
+	color: #FFFFFF;
+}
+.footernav a:hover {
+	font-size: 10px;
+	text-decoration: underline;
+	color: #FFFFFF;
+}
+.menuheader {
+	font-size: 12px;
+	color: #FFFFFF;
+	font-weight: bold;
+}
+.menuitem {
+	font-size: 10px;
+	text-decoration: none;
+	font-weight: bold;
+	color: #453159;
+}
+.menuitem a:hover {
+	font-size: 10px;
+	text-decoration: underline;
+	font-weight: bold;
+}
+.smallBr{
+	font-size: 1px; 
+	line-height: 2;
+}
+.listingtitle {
+	color: #D01F3C;
+}
+.morelink a {
+	font-size: 11px;
+	text-decoration: underline;
+	color: #A392B4;
+}
+.morelink a:hover {
+	font-size: 11px;
+	text-decoration: none;
+	color: #A392B4;
+}
+.smallform {
+	border-style:solid;
+	border-width:1px;
+	border-color:#666666;
+	font-size:10px;
+	color:#666666;
+}
+.jokeview {
+	font-size:16px;
+	font-weight:bold;
+	color: #333333;
+}

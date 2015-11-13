@@ -1,0 +1,69 @@
+<?php
+
+include_once("../config.inc.php");
+include_once("../db_connect.php");
+
+// get vars
+$j    = $_REQUEST['j'];
+
+if(!$j) {
+
+	$ptitle    = "ERROR";
+	$meta_keys = "";
+	$meta_desc = "";
+	$selected  = "VIEW";
+
+	include("../header.php");
+	
+	echo "<b>ERROR!</b><br><br>No joke was requested, please go back to the homepage and start again.<br>";
+
+}
+else {
+
+	$jokeqry = mysql_query("SELECT * FROM pendingjokes WHERE id = ".$j." LIMIT 1");
+	if($jokeqry) {
+	  $category      = mysql_result($jokeqry, 0, category);
+	  $joke          = stripslashes(mysql_result($jokeqry, 0, joke));
+	  $dateadded     = mysql_result($jokeqry, 0, dateadded);
+	  $dateadded     = substr($dateadded, 8, 2)."/".substr($dateadded, 5, 2)."/".substr($dateadded, 0, 4);
+	  $emailadd      = mysql_result($jokeqry, 0, email);
+	  $userip        = mysql_result($jokeqry, 0, ip);
+	}
+	else die("ERROR LOOKING UP JOKE");
+
+	$ptitle    = substr($joke, 0, 50)."... joke";
+	$meta_keys = "";
+	$meta_desc = "";
+	$selected  = "VIEW";
+
+	include("../header.php");
+
+?>
+
+	<table width="100%" cellspacing="5" cellpadding="0">
+	  <tr>
+	    <td valign="top">
+		<?php
+		  echo "<table width='100%' cellspacing='0' cellpadding='0'>";
+		  echo "<form method='POST' action='index.html'><input name='item' type='hidden' value='".$j."'><tr><td colspan='2'><b>";
+		  echo "Viewing Joke:</b><br><br></td></tr>";
+		  echo "<tr><td width='90'><font class='listingtitle'>Category:</font></td><td>".$category."</td></tr>";
+		  echo "<tr><td style='padding-top:4px;'><font class='listingtitle'>Date Added:</font></td><td style='padding-top:4px;'>".$dateadded."</td></tr>";
+		  echo "<tr><td style='padding-top:4px;'><font class='listingtitle'>User Email:</font></td><td style='padding-top:4px;'><a href='mailto:".$emailadd."'>".$emailadd."</a></td></tr>";
+		  echo "<tr><td style='padding-top:4px;'><font class='listingtitle'>User IP:</font></td><td style='padding-top:4px;'>".$userip."</td></tr>";
+		  echo "<tr><td style='padding-top:4px;'></td><td>&nbsp;</td></tr>";
+		  echo "<tr><td valign='top' style='padding-top:4px;'><font class='listingtitle'>Joke:</font></td><td valign='top' class='jokeview' style='padding-top:4px;'>".$joke."</td></tr>";
+		  echo "<tr><td valign='top' style='padding-top:14px;'></td><td valign='top' style='padding-top:14px;'><input name='approve' value='approve' type='submit'>&nbsp;<input name='decline' value='decline' type='submit'></td></tr></form>";
+		  echo "</table>";
+		  
+		?>
+		</td>
+	  </tr>
+	</table>
+<?php
+}
+?>
+
+<?php
+include("../footer.php");
+?>

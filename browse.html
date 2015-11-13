@@ -1,0 +1,74 @@
+<?php
+
+include_once("config.inc.php");
+include_once("db_connect.php");
+
+// get vars
+$let    = $_REQUEST['let'];
+$start  = $_REQUEST['start'];
+if(!isset($let)) $let = "A";
+else $let = strtoupper($let);
+if(!$start) $start = 0;
+
+$page = $start + 50; $page =  $page/50;
+
+$ptitle    = "Letter $let - Page $page - Browsing Jokes";
+$meta_keys = "jokes, funny, laugher, joke, gag, laughing";
+$meta_desc = "Browsing Jokes - Letter $let - Page $page - Joke Site";
+$selected  = "BROWSE";
+
+include("header.php");
+
+$temp3 = mysql_query("SELECT * FROM jokes WHERE BINARY LEFT(joke, 1) = '$let'");
+$temp = mysql_query("SELECT * FROM jokes WHERE BINARY LEFT(joke, 1) = '$let' ORDER BY joke LIMIT $start, $perpage");
+$total = mysql_numrows($temp3);
+
+?>
+
+<table width="100%" cellspacing="0" cellpadding="0">
+  <tr>
+    <td valign="top" align="center">
+	<br>
+	<?php
+	$letters = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'N', 'M', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z');
+	$i = 0;
+	while($i < COUNT($letters)){
+		echo "<a href=\"browse-$letters[$i]_page-0.html\"><b>$letters[$i]</b></a>";
+		$i++;
+		if(($i == 15) || ($i == 26)) echo "<br>";
+		else echo " | ";
+	}
+	?>
+	<br><br>
+	</td>
+  </tr>
+</table>
+
+	<?php
+	if($total > 0) {
+	  echo "<table width='100%' cellspacing='0' cellpadding='0'>";
+	  $tracker = $start+1;
+	  while($row = mysql_fetch_array($temp)) {
+	    echo "<tr><td width='40' align='right'><b>".$tracker.".</b>&nbsp;&nbsp;&nbsp;</td><td class='listingtitle'><b>Category:</b>&nbsp;".$row[category]."&nbsp;&nbsp;<img src='images/small-stars-".$row[votestartotal].".gif' width='52' height='8' alt='".$row[votestartotal]." stars'></td></tr>";
+	    echo "<tr><td></td><td>".trim(substr(stripslashes($row[joke]), 0, 120))."... <a href='view-".$row[id]."-".trim(substr(urlconvert($row[joke]), 0, 50)).".html' class='morelink'>more</a><br><br></td></tr>";
+		$tracker++;
+	  }
+	  echo "</table>";
+	}
+	?>
+	
+	<br><div align="center">
+		<?php
+		$start = $start + $perpage;
+		if($start > $perpage) {
+			$start2 = $start - ($perpage * 2);
+			if($start2 < 0) $start2 = 0;
+			echo "<a href=\"browse-".$let."_"."page-".$start2.".html\">< <b>Previous Page</b></a> &nbsp;";
+		}
+		if($start < $total) echo "&nbsp; <a href=\"browse-".$let."_"."page-".$start.".html\"><b>Next Page</b> ></a>";
+		?></div><br><br>
+		
+
+<?php
+include("footer.php");
+?>

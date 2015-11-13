@@ -1,0 +1,80 @@
+<?php
+
+include_once("config.inc.php");
+include_once("db_connect.php");
+
+// get vars
+$sendit    = $_REQUEST['sendit'];
+
+$ptitle    = "Contact Us";
+$meta_keys = "contact, us, jokes, funny, laugher, joke, gag, laughing";
+$meta_desc = "Contact Us";
+$selected  = "CONTACT";
+
+include("header.php");
+
+$showform = TRUE;
+
+if($sendit) {
+	
+	// get vars
+	$youremail = $_REQUEST['youremail'];
+	$subject   = $_REQUEST['subject'];
+	$message   = $_REQUEST['message'];
+
+	$errorstring = "";
+	$youremail = strtolower(formatField($youremail));
+	if(strlen($youremail) == 0) $errorstring .="You must specify your email.<br>";
+	if(strlen($subject) == 0) $errorstring .="You must specify a subject.<br>";
+	if(strlen($message) == 0) $errorstring .="You have not entered a message.<br>";
+	if(strlen($youremail) < 9 || strlen($youremail) > 64) $errorstring .= "Please enter a valid email address.<br>";
+	else
+	{
+		$emailtail = strstr($youremail, '@');
+		if(!strstr($youremail, '@') || !strstr($emailtail, '.')) $errorstring .= "Please enter a valid email address.<br>";
+	}
+	if(strlen($errorstring) == 0){
+		$subject = "Contact from the ".$site_name." site - ".$subject;
+		$sent = mail($site_email, $subject, $message, "FROM: ".$youremail);
+		if($sent) $showform = FALSE;
+	}
+
+}
+
+
+?>
+
+	<table width="100%" cellspacing="5" cellpadding="0">
+	  <tr>
+	    <td valign="top">
+		  <b>Contact Us</b><br><br>
+		  
+		  <?php
+		  if($showform == TRUE) {
+		  ?>
+		    Any questions or comments about the site or services we offer, feel free to contact us using the form below:<br><br>
+			NOTE: Please do not use this form for submitting new jokes as they will not be added. Please <a href="submit-joke.html">go here</a> to send us new jokes.<br><br>
+		   <table width="100%" cellpadding="0" cellspacing="0" border="0" align="center">
+			  <tr><form method="post" action="contact-us.html"><input type="hidden" name="sendit" value="yes"><td style="padding:0px;" align="center"><br>
+				<?php if(strlen($errorstring) > 0) echo "<table cellpadding=\"8\" cellspacing=\"0\" border=\"0\" align=\"center\" bgcolor=\"#cccccc\"><tr><td><font class=\"error\"><b>Error(s) Found:</b><br><br>$errorstring</td></tr></table><br><br>";?>
+				<table cellpadding="5" cellspacing="0" border="0" align="left">
+				<tr><td><b>Your Email:</b></td><td><input type="text" name="youremail" class="form" style="width:250px;" value="<?php echo stripslashes($youremail); ?>"></td></tr>
+				  <tr><td><b>Subject:</b></td><td><input type="text" name="subject" class="form" style="width:250px;" value="<?php echo stripslashes($subject); ?>"></td></tr>
+				  <tr><td valign="top"><b>Message:</b></td><td><textarea name="message" class="form" style="width:250px;" rows="10"><?php echo stripslashes($message); ?></textarea></td></tr>
+				  <tr><td></td><td><input type="submit" value="send" class="form">&nbsp;&nbsp;<input type="reset" value="reset" class="form"></td></tr>
+				</table><br>
+			  </td></form></tr>
+			</table>
+		  <?php
+		  }
+		  else echo "Thank You!<br><br>Your comments have been sent to us and you should expect a response within 24 hours.<br>";
+		  ?>
+		  
+		</td>
+	  </tr>
+	</table>
+	
+
+<?php
+include("footer.php");
+?>

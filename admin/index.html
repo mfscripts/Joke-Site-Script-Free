@@ -1,0 +1,60 @@
+<?php
+
+include_once("../config.inc.php");
+include_once("../db_connect.php");
+
+$ptitle    = "Approve New Jokes";
+$meta_keys = "";
+$meta_desc = "";
+$selected  = "ADMIN";
+
+include("../header.php");
+
+$approve = $_REQUEST['approve'];
+$decline = $_REQUEST['decline'];
+$item    = $_REQUEST['item'];
+
+if($approve) {
+  $get_info  = mysql_query("SELECT * FROM pendingjokes WHERE id = ".$item." LIMIT 1");
+  $category  = mysql_result($get_info, 0, category);
+  $joke      = mysql_result($get_info, 0, joke);
+  $dateadded = mysql_result($get_info, 0, dateadded);
+  $insert    = mysql_query("INSERT INTO jokes (category, joke, dateadded) VALUES ('".$category."', '".$joke."', '".$dateadded."')");
+  if($insert) $delete    = mysql_query("DELETE FROM pendingjokes WHERE id = ".$item." LIMIT 1");
+}
+elseif($decline) {
+  $delete = mysql_query("DELETE FROM pendingjokes WHERE id = ".$item." LIMIT 1");
+}
+	
+  $pending = mysql_query("SELECT * FROM pendingjokes ORDER BY dateadded LIMIT 30");
+
+?>
+
+	<table width="100%" cellspacing="5" cellpadding="0">
+	  <tr>
+	    <td valign="top">
+		<?php
+		  echo "<b>Approve New Jokes:</b><br><br>";
+		  echo "Listed below are all the pending jokes on the system. Choose the relevant option next to each item to approve or remove the joke.<br><br>";
+		?>
+		</td>
+	  </tr>
+	</table>
+	
+	<?php
+	echo "<table width='100%' cellspacing='0' cellpadding='0'>";
+	if(mysql_numrows($pending) > 0) {
+	  $tracker = $start+1;
+	  while($row = mysql_fetch_array($pending)) {
+	    echo "<form method='POST' action='index.html'><input name='item' type='hidden' value='".$row[id]."'><tr><td width='40' align='right'><b>".$tracker.".</b>&nbsp;&nbsp;&nbsp;</td><td class='listingtitle'><b>Category:</b>&nbsp;".$row[category]."</td><td rowspan='2' width='150'><input name='approve' value='approve' type='submit'>&nbsp;<input name='decline' value='decline' type='submit'></td></tr></form>";
+	    echo "<tr><td></td><td>".trim(substr(stripslashes($row[joke]), 0, 120))."... <a href='viewitem.html?j=".$row[id]."' class='morelink'>more</a><br><br></td></tr>";
+		$tracker++;
+	  }
+	}
+	else echo "<tr><td><br>&nbsp;<b>There are currently no pending jokes.</b><br><br></td></tr>";
+	echo "</table>";
+	?>
+
+<?php
+include("../footer.php");
+?>

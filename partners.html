@@ -1,0 +1,29 @@
+<?php
+
+include_once("config.inc.php");
+include_once("db_connect.php");
+
+$ptitle    = "Partners of ".$site_name;
+$meta_keys = "partners, jokes, funny, laugher, joke, gag, laughing";
+$ptitle    = "Partners of ".$site_name;
+$selected  = "LINKS";
+
+include("header.php");
+
+?>
+
+<table width="100%" cellspacing="5" cellpadding="0">
+  <tr>
+	<td valign="top">
+	  <?php
+	    echo "<b>Partners of ".$site_name.":</b><br><br>";
+	    echo "Here are some sites we think you may find interesting. If you would like to exchange links with us, please contact us with the details of your link and where a backlink is located using the <a href='contact-us.html'>contact page</a>.<br><br>";
+		include("links.inc.php");
+	  ?>
+	</td>
+  </tr>
+</table>
+
+<?php
+include("footer.php");
+?>
