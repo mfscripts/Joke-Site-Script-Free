@@ -10,4 +10,4 @@ Setup Instructions:
 
 You should now be set to go!
 
-Check out www.mfscripts.com for other PHP scripts!
+Check out http://mfscripts.com/ for other PHP scripts!
