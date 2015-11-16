@@ -38,7 +38,7 @@ Full instructions are given in the ___SETUP_INSTRUCTIONS.txt file found within t
 If you'd like to contribute to the project, please contact us via the github project https://github.com/mfscripts/Jokes-Site-Script-Free
 
 <h2>License</h2>
-Fonts Site Script Free is copyrighted by <a href="http://mfscripts.com/">MFScripts</a> and is released under the <a href="http://opensource.org/licenses/MIT">MIT license</a>. You are free to use the fonts site scriptvasc as you wish. The only restriction to this PHP script is that this README file must not be edited or deleted. 
+Fonts Site Script Free is copyrighted by <a href="http://mfscripts.com/">MFScripts</a> and is released under the <a href="http://opensource.org/licenses/MIT">MIT license</a>. You are free to use the jokes site script as you wish. The only restriction to this PHP script is that this README file must not be edited or deleted. 
 
 <h2>Support</h2>
 This code is released without any support and as-is. Any support requests on this version will be removed. For community driven support please use the github project https://github.com/mfscripts/Jokes-Site-Script-Free
